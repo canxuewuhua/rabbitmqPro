@@ -6,5 +6,5 @@ spring:
     port: 5672
     username: ems
     password: 123456
-    virtual-host: ems
+    virtual-host: /ems
 

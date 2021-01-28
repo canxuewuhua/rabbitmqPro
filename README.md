@@ -219,6 +219,11 @@
          {alarms,[{rabbit@kimmy,[]},{rabbit@timmy,[]},{rabbit@jimmy,[]}]}]
          
          配置好镜像集群后，项目就能正常启动了
+         
+         镜像集群需要设置同步策略 就可以实现高可用 ，如果一台机器挂了，其他机器也能使用；如果不设置同步策略，主节点机器挂了，其他子节点是不能使用，主节点正常情况下，子节点可以分担压力
+         
+         要指定使用哪台虚拟机 -p '主机名' 或者指定队列名，对特定队列进行同步 '^'对全部队列进行
+         rabbitmqctl set_policy -p '/ems' ha-all '^QUEUE_MYSELF_SEND_MESSAGE_DEV' '{"ha-mode":"all","ha-sync-mode":"automatic"}'
 
     	
     	
