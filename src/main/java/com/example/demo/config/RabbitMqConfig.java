@@ -7,13 +7,15 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * 如果没有测试MQ，将该处的注解注掉，防止程序去连接rabbitMQ
  */
-//@Configuration
-//@EnableCaching
+@Configuration
+@EnableCaching
 @Slf4j
 public class RabbitMqConfig implements RabbitTemplate.ReturnCallback {
 
@@ -35,13 +37,12 @@ public class RabbitMqConfig implements RabbitTemplate.ReturnCallback {
         //RabbitMQConfigDTO rabbitMQConfigDTO = JSONObject.parseObject(response, RabbitMQConfigDTO.class);
 
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setHost("192.168.199.239");
-        //connectionFactory.setHost("120.131.15.17");
+        connectionFactory.setHost("192.168.199.108");
         connectionFactory.setPort(5672);
-        connectionFactory.setUsername("admin");
+        connectionFactory.setUsername("ems");
         connectionFactory.setPassword("123456");
         connectionFactory.setPublisherConfirms(true);
-        //connectionFactory.setVirtualHost();
+        connectionFactory.setVirtualHost("ems");
 
         log.info("rabbitMQ初始化成功");
         return connectionFactory;

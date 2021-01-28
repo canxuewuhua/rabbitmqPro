@@ -181,6 +181,48 @@
     
     删除策略
     	rabbitmqctl clear_policy ha-all
+    	
+    	20200128今天首次启动rabbitmq集群出现的问题是无法进行集群的启动
+    	出现了缺少了 socat: error while loading shared libraries: libwrap.so.0: cannot open share
+    	参考配置了 https://www.cnblogs.com/bclshuai/p/7446619.html 但不知道这个有用不
+    	修改/etc/profile在文件末尾加上两行： LD_LIBRARY_PATH=./ 和 export LD_LIBRARY_PATH
+    	source  /etc/profile
+    	
+    	最后发现也不行，上面的配置也没有去掉
+    	
+    	发现可能是socat这个安装有问题 参考文章：https://blog.csdn.net/u013098162/article/details/106842095/
+    	直接执行命令 yum install socat 进行安装
+    	安装完之后
+    	再执行启动rabbitmq 还是启动不了 参考文章：https://www.cnblogs.com/straycats/p/7719933.html
+    	解决方案：
+        
+        /var/lib/rabbitmq/mnesia 目录下存在rabbit@localhost.pid、rabbit@localhost、rabbit@localhost-plugins-expand，
+        删除这3项后，再使用systemctl start rabbitmq-server启动，发现不报错了。
+        
+        再重新启动就可以了
+        
+        但是在启动镜像集群时要注意
+        
+        可以先启动三台rabbitmq，
+        第一台先关闭 再执行  rabbitmq-server -detached
+        第二台 第三台 使用systemctl start rabbitmq-server  接着执行 rabbitmqctl stop_app 关闭
+        第二台 第三台 接着加入集群    rabbitmqctl join_cluster rabbit@timmy
+                 	然后启动服务    rabbitmqctl start_app
+        之后看到管理页面每一台机器上都有三个节点了。
+        执行 rabbitmqctl cluster_status 查看集群状态
+        
+         Cluster status of node rabbit@jimmy ...
+         [{nodes,[{disc,[rabbit@jimmy,rabbit@kimmy,rabbit@timmy]}]},
+         {running_nodes,[rabbit@kimmy,rabbit@timmy,rabbit@jimmy]},
+         {cluster_name,<<"rabbit@timmy">>},
+         {partitions,[]},
+         {alarms,[{rabbit@kimmy,[]},{rabbit@timmy,[]},{rabbit@jimmy,[]}]}]
+         
+         配置好镜像集群后，项目就能正常启动了
+
+    	
+    	
+    	
  	
   
 
